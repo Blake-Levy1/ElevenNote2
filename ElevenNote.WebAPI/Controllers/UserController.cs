@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -29,5 +30,19 @@ public class UserController : ControllerBase
         }
 
         return BadRequest("User could not be registered");
+    }
+
+    [Authorize]
+    [HttpGet("{userId:int}")]
+    public async Task<IActionResult> GetById([FromRoute] int userId)
+    {
+        var userDetail = await _service.GetUserByIdAsync(userId);
+
+        if (userDetail is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(userDetail);
     }
 }
