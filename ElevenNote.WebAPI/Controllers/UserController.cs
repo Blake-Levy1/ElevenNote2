@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,11 @@ using Microsoft.AspNetCore.Mvc;
 public class UserController : ControllerBase
 {
     private readonly IUserService _service;
-    public UserController(IUserService service)
+    private readonly ITokenService _tokenService;
+    public UserController(IUserService service, ITokenService tokenService)
     {
         _service = service;
+        _tokenService = tokenService;
     }
 
     [HttpPost("Register")]
@@ -44,5 +47,22 @@ public class UserController : ControllerBase
         }
 
         return Ok(userDetail);
+    }
+
+    [HttpPost("~/api/Token")]
+    public async Task<IActionResult> Token([FromBody] TokenRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var tokenResponse = await _tokenService.GetTokenAsync(request);
+        if (tokenResponse is null)
+        {
+            return BadRequest("Invalid username or password.");
+        }
+
+        return Ok(tokenResponse);
     }
 }
