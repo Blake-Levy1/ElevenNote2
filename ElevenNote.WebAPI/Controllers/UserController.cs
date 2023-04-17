@@ -35,7 +35,7 @@ public class UserController : ControllerBase
         return BadRequest("User could not be registered");
     }
 
-    [Authorize]
+    // [Authorize]
     [HttpGet("{userId:int}")]
     public async Task<IActionResult> GetById([FromRoute] int userId)
     {
